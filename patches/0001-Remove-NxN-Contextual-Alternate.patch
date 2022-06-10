@@ -1,0 +1,39 @@
+From 6663995c3694a4ca80f59edad3ecb50b6a7cb560 Mon Sep 17 00:00:00 2001
+From: Jon Palmisciano <jp@jonpalmisc.com>
+Date: Fri, 10 Jun 2022 09:19:40 -0400
+Subject: [PATCH 1/2] Remove 'NxN' Contextual Alternate
+
+Qt has limited OpenType support, and does not support enabling/disabling
+specific font features. Furthermore, other contextual alternates are still
+desired, but the NxN contextual alternate is not, due to its distracting and
+suboptimal appearance in UI that often displays numbers in hexadecimal format.
+---
+ src/features/calt.fea | 15 ---------------
+ 1 file changed, 15 deletions(-)
+
+diff --git a/src/features/calt.fea b/src/features/calt.fea
+index dcd5a05ee..7a2d166c8 100644
+--- a/src/features/calt.fea
++++ b/src/features/calt.fea
+@@ -350,19 +350,4 @@ sub @Numeral @Whitespace @Whitespace @between_num_L' @Whitespace @Whitespace @Nu
+
+ # END case
+ # -------------------------------------------------------------------------------------
+-# BEGIN NxN
+-
+-# x surrounded by numbers, e.g. 3x4 -> 3×4
+-sub @Numeral x' @Numeral                                                 by multiply.case; # 3x9
+-sub @Numeral @Whitespace x' @Numeral                                     by multiply.case; # 3 x9
+-sub @Numeral @Whitespace @Whitespace x' @Numeral                         by multiply.case; # 3  x9
+-sub @Numeral x' @Whitespace @Numeral                                     by multiply.case; # 3x 9
+-sub @Numeral @Whitespace x' @Whitespace @Numeral                         by multiply.case; # 3 x 9
+-sub @Numeral @Whitespace @Whitespace x' @Whitespace @Numeral             by multiply.case; # 3  x 9
+-sub @Numeral x' @Whitespace @Whitespace @Numeral                         by multiply.case; # 3x  9
+-sub @Numeral @Whitespace x' @Whitespace @Whitespace @Numeral             by multiply.case; # 3 x  9
+-sub @Numeral @Whitespace @Whitespace x' @Whitespace @Whitespace @Numeral by multiply.case; # 3  x  9
+-
+-# END NxN
+-# -------------------------------------------------------------------------------------
+
+--
+2.36.1
