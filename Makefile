@@ -1,5 +1,5 @@
 SRC := inter
-BUILD := $(SRC)/build/fonts/static
+BUILD := $(SRC)/build/fonts/static-hinted
 OUT := out
 
 .PHONY:	clean
@@ -7,13 +7,13 @@ OUT := out
 $(OUT):	$(SRC)
 	mkdir -p $@
 
-	cp $(BUILD)/Inter-Regular.otf $@
-	cp $(BUILD)/Inter-Italic.otf $@
-	cp $(BUILD)/Inter-Bold.otf $@
-	cp $(BUILD)/Inter-BoldItalic.otf $@
+	cp $(BUILD)/Inter-Regular.ttf $@
+	cp $(BUILD)/Inter-Italic.ttf $@
+	cp $(BUILD)/Inter-Bold.ttf $@
+	cp $(BUILD)/Inter-BoldItalic.ttf $@
 
 $(SRC):	patch
-	cd $(SRC) && $(MAKE) static_otf
+	cd $(SRC) && $(MAKE) static
 
 patch:	$(wildcard patches/*)
 	cd $(SRC) && git checkout .
