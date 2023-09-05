@@ -1,39 +1,60 @@
-From 6663995c3694a4ca80f59edad3ecb50b6a7cb560 Mon Sep 17 00:00:00 2001
-From: Jon Palmisciano <jp@jonpalmisc.com>
-Date: Fri, 10 Jun 2022 09:19:40 -0400
-Subject: [PATCH 1/2] Remove 'NxN' Contextual Alternate
+From 1aa648a9429479ec2c9752be5de82cd9aabcf311 Mon Sep 17 00:00:00 2001
+From: Alexander Taylor <alex@vector35.com>
+Date: Tue, 5 Sep 2023 15:02:27 -0400
+Subject: [PATCH] Remove 'NxN' Contextual Alternate
 
-Qt has limited OpenType support, and does not support enabling/disabling
-specific font features. Furthermore, other contextual alternates are still
-desired, but the NxN contextual alternate is not, due to its distracting and
-suboptimal appearance in UI that often displays numbers in hexadecimal format.
+Qt has limited OpenType support and users cannot enable/disable specific
+font features. Furthermore, other contextual alternates are still
+desired, but the NxN contextual alternate is not. Despite this
+contextual alternate being updated to better handle hexadecimal numbers,
+there are still plenty of typical situations where it is not desired
+(e.g. "x64").
 ---
- src/features/calt.fea | 15 ---------------
- 1 file changed, 15 deletions(-)
+ src/features/calt.fea | 34 ----------------------------------
+ 1 file changed, 34 deletions(-)
 
 diff --git a/src/features/calt.fea b/src/features/calt.fea
-index dcd5a05ee..7a2d166c8 100644
+index 4374bb26d..198524154 100644
 --- a/src/features/calt.fea
 +++ b/src/features/calt.fea
-@@ -350,19 +350,4 @@ sub @Numeral @Whitespace @Whitespace @between_num_L' @Whitespace @Whitespace @Nu
-
+@@ -358,37 +358,3 @@ sub @Numeral @Whitespace @Whitespace @between_num_L' @Whitespace @Whitespace @Nu
+ 
  # END case
  # -------------------------------------------------------------------------------------
 -# BEGIN NxN
+-# x surrounded by numbers, e.g:
+-#   3x4   -> 3×4
+-#   10x20 -> 10×20
+-#   0x10  -> 0x10   No substitution
+-#
+-@NumNoZero = [
+-  #
+-  # NOTE! Keep this up to date with @Whitespace
+-  #
+-  #   1. in glyphs, copy list from font into > features > Whitespace class
+-  #   2. paste & replace this list here
+-  #   3. remove all "zero" glyphs
+-  #
+-  one two twostroke three four five Tonefive six seven eight nine
+-  one.ss01 three.1 four.ss01 six.ss01 nine.ss01
+-  one.tf two.tf three.tf four.tf five.tf six.tf seven.tf eight.tf
+-  nine.tf one.tf.ss01 three.1.tf four.tf.ss01 six.tf.ss01
+-  nine.tf.ss01
+-];
 -
--# x surrounded by numbers, e.g. 3x4 -> 3×4
--sub @Numeral x' @Numeral                                                 by multiply.case; # 3x9
--sub @Numeral @Whitespace x' @Numeral                                     by multiply.case; # 3 x9
--sub @Numeral @Whitespace @Whitespace x' @Numeral                         by multiply.case; # 3  x9
--sub @Numeral x' @Whitespace @Numeral                                     by multiply.case; # 3x 9
--sub @Numeral @Whitespace x' @Whitespace @Numeral                         by multiply.case; # 3 x 9
--sub @Numeral @Whitespace @Whitespace x' @Whitespace @Numeral             by multiply.case; # 3  x 9
--sub @Numeral x' @Whitespace @Whitespace @Numeral                         by multiply.case; # 3x  9
--sub @Numeral @Whitespace x' @Whitespace @Whitespace @Numeral             by multiply.case; # 3 x  9
--sub @Numeral @Whitespace @Whitespace x' @Whitespace @Whitespace @Numeral by multiply.case; # 3  x  9
+-sub @NumNoZero x' @Numeral by multiply.case; # "3x9" "1x0"
+-sub @Numeral @Numeral x' @Numeral by multiply.case; # "10x0"
+-
+-sub @NumNoZero @Whitespace x' @Numeral by multiply.case; # "3 x9" "1 x0"
+-sub @NumNoZero @Whitespace x' @Whitespace @Numeral by multiply.case; # "3 x 9" "1 x 0"
+-sub @NumNoZero x' @Whitespace @Numeral by multiply.case; # "3x 9" "1x 0"
+-
+-sub @Numeral @Numeral @Whitespace x' @Numeral by multiply.case; # "10 x0"
+-sub @Numeral @Numeral @Whitespace x' @Whitespace @Numeral by multiply.case; # "10 x 0"
+-sub @Numeral @Numeral x' @Whitespace @Numeral by multiply.case; # "10x 0"
 -
 -# END NxN
 -# -------------------------------------------------------------------------------------
+-- 
+2.39.2 (Apple Git-143)
 
---
-2.36.1
